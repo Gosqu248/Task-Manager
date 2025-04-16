@@ -41,7 +41,6 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
         task.setTitle(taskRequest.title());
         task.setDescription(taskRequest.description());
-        task.setCompleted(taskRequest.completed());
         taskRepository.save(task);
         return "Task updated successfully";
     }

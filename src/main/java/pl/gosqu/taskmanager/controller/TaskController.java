@@ -2,10 +2,8 @@ package pl.gosqu.taskmanager.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.gosqu.taskmanager.request.TaskRequest;
 import pl.gosqu.taskmanager.response.TaskResponse;
 import pl.gosqu.taskmanager.service.TaskService;
 
@@ -27,5 +25,28 @@ public class TaskController {
             @PathVariable("task-id") Long taskId
     ) {
         return ResponseEntity.ok(service.getTaskById(taskId));
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createTask(
+            @RequestBody TaskRequest taskRequest
+    ) {
+        return ResponseEntity.ok(service.createTask(taskRequest));
+    }
+
+    @PutMapping("/{task-id}")
+    public ResponseEntity<String> updateTask(
+            @PathVariable("task-id") Long taskId,
+            @RequestBody TaskRequest taskRequest
+    ) {
+        return ResponseEntity.ok(service.updateTask(taskId, taskRequest));
+    }
+
+    @DeleteMapping("/{task-id}")
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable("task-id") Long taskId
+    ) {
+        service.deleteTask(taskId);
+        return ResponseEntity.noContent().build();
     }
 }

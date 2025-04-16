@@ -12,6 +12,7 @@ public class TaskMapper {
         return Task.builder()
                 .title(request.title())
                 .description(request.description())
+                .completed(false)
                 .build();
     }
 
