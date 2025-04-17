@@ -46,6 +46,15 @@ public class TaskService {
     }
 
     @CacheEvict(value = "tasks", allEntries = true)
+    public String completeTask(Long taskId) {
+        var task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
+        task.setCompleted(true);
+        taskRepository.save(task);
+        return "Task completed successfully";
+    }
+
+    @CacheEvict(value = "tasks", allEntries = true)
     public void deleteTask(Long taskId) {
         var task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
