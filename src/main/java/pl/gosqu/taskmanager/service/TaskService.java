@@ -19,7 +19,7 @@ public class TaskService {
     private final TaskMapper mapper;
     @Cacheable(value = "tasks")
     public List<TaskResponse> getAllTasks() {
-        return taskRepository.findAll().stream()
+        return taskRepository.findAllSorted().stream()
                 .map(mapper::toTaskResponse)
                 .collect(Collectors.toList());
     }
@@ -49,7 +49,8 @@ public class TaskService {
     public String completeTask(Long taskId) {
         var task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
-        task.setCompleted(true);
+        Boolean completed = task.getCompleted();
+        task.setCompleted(!completed);
         taskRepository.save(task);
         return "Task completed successfully";
     }
