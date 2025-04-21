@@ -3,7 +3,9 @@ package pl.gosqu.taskmanager.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import pl.gosqu.taskmanager.repository.TaskRepository;
 import pl.gosqu.taskmanager.request.TaskRequest;
@@ -17,12 +19,15 @@ import java.util.stream.Collectors;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper mapper;
+
     @Cacheable(value = "tasks")
     public List<TaskResponse> getAllTasks() {
         return taskRepository.findAllSorted().stream()
                 .map(mapper::toTaskResponse)
                 .collect(Collectors.toList());
     }
+
+    @Cacheable(value = "task", key = "#taskId")
     public TaskResponse getTaskById(Long taskId) {
         return taskRepository.findById(taskId)
                 .map(mapper::toTaskResponse)
@@ -35,7 +40,11 @@ public class TaskService {
         return "Task created successfully";
     }
 
-    @CacheEvict(value = "tasks", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "tasks", allEntries = true)
+    }, put = {
+        @CachePut(value = "task", key = "#taskId")
+    })
     public String updateTask(Long taskId, TaskRequest taskRequest) {
         var task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
@@ -45,7 +54,11 @@ public class TaskService {
         return "Task updated successfully";
     }
 
-    @CacheEvict(value = "tasks", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "tasks", allEntries = true)
+    }, put = {
+        @CachePut(value = "task", key = "#taskId")
+    })
     public String completeTask(Long taskId) {
         var task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
@@ -55,11 +68,13 @@ public class TaskService {
         return "Task completed successfully";
     }
 
-    @CacheEvict(value = "tasks", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "tasks", allEntries = true),
+        @CacheEvict(value = "task", key = "#taskId")
+    })
     public void deleteTask(Long taskId) {
         var task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
         taskRepository.delete(task);
     }
-
 }

@@ -1,5 +1,7 @@
 package pl.gosqu.taskmanager.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 public record TaskResponse(
@@ -7,6 +9,6 @@ public record TaskResponse(
         String title,
         String description,
         Boolean completed,
-        LocalDateTime createdAt
+        @JsonFormat(pattern = "yyyy.MM.dd HH:mm:ss:SSSSSSSSS") LocalDateTime createdAt
 ) {
 }

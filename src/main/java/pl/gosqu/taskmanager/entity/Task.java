@@ -25,7 +25,7 @@ public class Task {
     @Column(length = 1024)
     private String description;
 
-    private Boolean completed = false;
+    private Boolean completed;
 
     @CreatedDate
     @Column(updatable = false)
